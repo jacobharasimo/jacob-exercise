@@ -71,8 +71,8 @@ export default function Orders() {
   const classes = useStyles();
   return (
     <>
-      <Title>Recent Orders</Title>
-      <Table size="small">
+      <Title data-testid="title">Recent Orders</Title>
+      <Table size="small" data-testid="table">
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
@@ -95,7 +95,11 @@ export default function Orders() {
         </TableBody>
       </Table>
       <div className={classes.seeMore}>
-        <Button color="primary" onClick={preventDefault}>
+        <Button
+          data-testid="action-button"
+          color="primary"
+          onClick={preventDefault}
+        >
           See more orders
         </Button>
       </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,12 +17,19 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import { useDispatch, useSelector } from 'react-redux';
 import { mainListItems, secondaryListItems } from '../../components/listItems';
 import Chart from '../../components/chart';
 import Deposits from '../../components/deposits';
 import Orders from '../../components/orders';
 import { Copyright } from '../../components/copyright';
-
+import { makeSelectChartData } from './selectors';
+import { loadChartData } from './actions';
+import { useInjectReducer } from '../../utils/injectReducer';
+import { useInjectSaga } from '../../utils/injectSaga';
+import reducer from './reducer';
+import saga from './saga';
+import { makeSelectIsLoading } from '../app/loadingSelector';
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -104,9 +111,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const key = 'dashboard';
+
 export default function Dashboard() {
+  useInjectReducer({ key, reducer });
+  useInjectSaga({ key, saga });
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const chartData = useSelector(makeSelectChartData);
+  const dispatch = useDispatch();
+  const isChartDataLoading = useSelector(makeSelectIsLoading('chartData'));
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -115,8 +131,14 @@ export default function Dashboard() {
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
+  useEffect(() => {
+    if (!isChartDataLoading) {
+      dispatch(loadChartData());
+    }
+  }, [isChartDataLoading]);
+
   return (
-    <div className={classes.root}>
+    <div className={classes.root} data-testid="dashboard">
       <CssBaseline />
       <AppBar
         position="absolute"
@@ -175,7 +197,7 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                <Chart />
+                <Chart isLoading={isChartDataLoading} data={chartData} />
               </Paper>
             </Grid>
             {/* Recent Deposits */}

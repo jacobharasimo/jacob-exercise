@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useTheme } from '@material-ui/core/styles';
 import {
   LineChart,
@@ -10,27 +11,11 @@ import {
 } from 'recharts';
 import { Title } from '../title';
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
-
-// TODO: Retrieve data from ${REACT_APP_API_BASE}/sales?date=<today>
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
-];
-
-export default function Chart() {
+export default function Chart({ data, isLoading }) {
   const theme = useTheme();
-
+  if (isLoading) {
+    return null;
+  }
   return (
     <>
       <Title>Today</Title>
@@ -65,3 +50,13 @@ export default function Chart() {
     </>
   );
 }
+
+Chart.propTypes = {
+  data: PropTypes.array,
+  isLoading: PropTypes.bool,
+};
+
+Chart.defaultProps = {
+  data: null,
+  isLoading: false,
+};
