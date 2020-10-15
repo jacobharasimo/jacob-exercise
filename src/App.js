@@ -1,8 +1,8 @@
 import React from 'react';
-import Dashboard from './Dashboard'
+import Dashboard from './containers/dashboard';
 
 function App() {
-  return <Dashboard />
+  return <Dashboard />;
 }
 
 export default App;
